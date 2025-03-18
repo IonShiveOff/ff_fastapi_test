@@ -1,7 +1,25 @@
-import redis.asyncio as redis
 import json
 
-redis_client: redis.Redis = None  # Global Redis instance
+import redis.asyncio as redis
+
+redis_client: redis.Redis = None
+
+
+async def redis_init():
+    """
+    Initialize Redis connection
+    """
+    global redis_client
+    redis_client = redis.Redis(host="redis", port=6379, decode_responses=True)
+
+
+async def redis_close():
+    """
+    Close Redis connection
+    """
+    global redis_client
+    await redis_client.close()
+
 
 async def store_request_response(key: str, data: dict):
     """
@@ -9,6 +27,7 @@ async def store_request_response(key: str, data: dict):
     """
     global redis_client
     await redis_client.set(key, json.dumps(data))
+
 
 async def get_request_response(key: str):
     """
